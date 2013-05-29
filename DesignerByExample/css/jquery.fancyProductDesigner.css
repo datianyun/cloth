@@ -6,10 +6,10 @@
 @font-face {
 	font-family: 'Carme';
 	src: local('?'), url('../fonts/Carme.woff') format('woff');
+		font-style: normal;
 	font-weight: normal;
-	font-style: normal;
-}
 
+}
 .fpd-container div, .fpd-container ul, .fpd-container li, .fpd-container span, .fpd-container a, .fpd-container img {
 	margin: 0;
 	padding: 0;
