@@ -1,0 +1,196 @@
+<!DOCTYPE HTML>
+    <html>
+    <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Fancy Product Designer</title>
+    
+    <!-- Style sheets -->
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="css/smoothness/jquery-ui-1.9.2.custom.min.css" />
+	<link rel="stylesheet" type="text/css" href="css/jquery.fancyProductDesigner.css" />
+	<link rel="stylesheet" type="text/css" href="css/jquery.fancyProductDesigner-fonts.css" />
+    
+    <!-- Include js files -->
+	<script src="js/jquery.min.js" type="text/javascript"></script>
+    <script src="bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+	<script src="js/jquery-ui-1.9.2.custom.min.js" type="text/javascript"></script>
+    <script src="js/jquery.fancyProductDesigner.min.js" type="text/javascript"></script>
+            
+	<script type="text/javascript">
+	
+		jQuery(document).ready(function() {
+			
+			//call the plugin and save it in a variable to have access to the API
+			var fpd = $('#fpd').fancyProductDesigner({
+				editorMode: false,
+				fonts: ['Arial', 'Helvetica', 'Times New Roman', 'Verdana', 'Geneva', 'Fearless'],
+				//these are the parameters for the text that is added via the "Add Text" button
+				customTextParamters: {x: 210, y: 250, colors: "#000000", removable: true, resizable: true, draggable: true, rotatable: true}
+			})
+			.data('fancy-product-designer');
+			
+			//get current price when product is created and update it when price changes
+			$('#fpd')
+			.bind('productCreate', function(evt){
+				$('#thsirt-output').html('Click the "Checkout" button to see the returning object with all properties.');
+				$('#thsirt-price').text(fpd.getPrice());
+			})
+			.bind('priceChange', function(evt, price, currentPrice) {
+				$('#thsirt-price').text(currentPrice);
+			});
+			
+			//button to print the product
+			$('#print-button').click(function(){
+				fpd.print();
+				return false;
+			});
+			
+						//button to print the product
+			$('#price-button').click(function(){
+				$(".api-buttons .price").css({display:"block"});
+				
+			});
+			
+			//button to print the product
+			$('#checkout-button').click(function(){
+				//get only editable elements
+				var product = fpd.getProduct(true);
+				var output = '';
+				//check if product is an array (different views)
+				if(product instanceof Array) {
+					//loop through all views
+					for(var i=0; i < product.length; ++i) {
+						output += _getProductOutput(product[i]);
+					}
+				}
+				else {
+					//just a single product without views
+					output = _getProductOutput(product);
+				}
+				
+				$('#thsirt-output').html(output);
+		
+				$('#message')[0].value=output;
+				return false;
+			});
+			$('#submit').click(function(){
+				//get only editable elements
+				var product = fpd.getProduct(true);
+				var output = '';
+				//check if product is an array (different views)
+				if(product instanceof Array) {
+					//loop through all views
+					for(var i=0; i < product.length; ++i) {
+						output += _getProductOutput(product[i]);
+					}
+				}
+				else {
+					//just a single product without views
+					output = _getProductOutput(product);
+				}
+				
+
+		
+				$('#message')[0].value=output;
+				document.getElementById("submitForm").submit();
+
+			});
+			//format a product object for the output panel
+			function _getProductOutput(product) {
+				var output = '<strong>Product:</strong> '+product.title;
+				
+				output += '<br /><strong>Elements:</strong>';
+				output += '<p>';
+				$(product.elements).each(function(i, elem) {
+					output += '<strong>Title:</strong> ' + elem.title;
+					output += '<br />';
+					output += '<strong>Parameters:</strong><br />';
+					for (var prop in elem.parameters) {
+				      output += prop + ": " + elem.parameters[prop] + ', ';
+				   }
+				   output = output.substring(0, output.length-2);
+				   output += '<br /><br />';
+				});
+				output += '</p>';
+				return output;
+			};
+		});
+    </script>
+    
+    </head>
+    
+    <body>
+
+		  	<form action="submitquote.php" method="post" id="submitForm">
+Name: <input type="text" name="fname">
+Email: <input type="text" name="useremail">
+Note: <input type="text" name="message"  id="message">
+Note: <input type="text" name="message" id="message">
+<button id="submit" type="button">提交</button>
+</form>
+    	<div id="main-container" class="container">      
+    	<div id="content">
+    		<div id="fpd">
+    			<div class="fpd-product" title="model1" data-thumbnail="recipesmall/Model1.png">
+	    			<img src="recipe/Model1.png" title="Model 1" data-parameters='{"x": 0, "y": 0, "colors": "#d59211", "price": 80}' />
+	    					  		<span title="Note" data-parameters='{"x":100, "y": 100, "removable": true, "draggable": true, "rotatable": true, "resizable": true, "colors": "#000000"}' >Write your note</span>
+			  		<!-- This is another view -->
+			  		
+				</div>
+				<div class="fpd-product" title="Sweater" data-thumbnail="images/sweater/preview.png">
+	    			<img src="images/sweater/basic.png" title="Sweater" data-parameters='{"x": 120, "y": 76, "colors": "#D5D5D5", "price": 20}' />
+			  		<img src="images/sweater/highlights.png" title="Hightlights" data-parameters='{"x": 123, "y": 76}' />
+			  		<img src="images/sweater/shadow.png" title="Shadow" data-parameters='{"x": 123, "y": 81}' />
+				</div>
+				
+		  		<div class="fpd-design">
+			  		<img src="recipe/Top/top1.png" category="Swirl" title="Swirl" data-parameters='{"x": 0, "y":0, "colors": "#000000", "removable": true, "draggable": true, "rotatable": true, "resizable": true, "price": 10}' />
+			  		<img src="recipe/Top/top2.png" category="Swirl" title="Swirl2" data-parameters='{"x": 0, "y": 0, "colors": "#000000", "removable": true, "draggable": true, "rotatable": true, "resizable": true}' />
+			  		<img src="recipe/Top/top3.png" category="Swirl" title="Swirl3" data-parameters='{"x": 0, "y": 0, "colors": "#000000", "removable": true, "draggable": true, "rotatable": true, "resizable": true}' />
+			  		<img src="recipe/Top/top4.png" category="Swirl" title="HeartBlur" data-parameters='{"x": 0, "y": 0, "colors": "#bf0200", "removable": true, "draggable": true, "rotatable": true, "resizable": true, "price": 5}' />
+			  		<img src="recipe/Top/top5.png" category="Swirl" title="Converse" data-parameters='{"x": 0, "y": 0, "colors": "#000000", "removable": true, "draggable": true, "rotatable": true, "resizable": true}' />
+			  		<img src="recipe/Top/top6.png" category="Swirl" title="Crown" data-parameters='{"x": 0, "y": 0, "colors": "#000000", "removable": true, "draggable": true, "rotatable": true, "resizable": true}' />
+			  		<img src="recipe/Top/top1.png" category="Swirl" title="Swirl" data-parameters='{"x": 0, "y":0, "colors": "#000000", "removable": true, "draggable": true, "rotatable": true, "resizable": true, "price": 10}' />
+			  		<img src="recipe/Top/top2.png" category="Swirl" title="Swirl2" data-parameters='{"x": 0, "y": 0, "colors": "#000000", "removable": true, "draggable": true, "rotatable": true, "resizable": true}' />
+			  		<img src="recipe/Top/top3.png" category="Swirl" title="Swirl3" data-parameters='{"x": 0, "y": 0, "colors": "#000000", "removable": true, "draggable": true, "rotatable": true, "resizable": true}' />
+			  		<img src="recipe/Top/top4.png" category="Swirl" title="HeartBlur" data-parameters='{"x": 0, "y": 0, "colors": "#bf0200", "removable": true, "draggable": true, "rotatable": true, "resizable": true, "price": 5}' />
+			  		<img src="recipe/Top/top5.png" category="Swirl" title="Converse" data-parameters='{"x": 0, "y": 0, "colors": "#000000", "removable": true, "draggable": true, "rotatable": true, "resizable": true}' />
+			  		<img src="recipe/Top/top6.png" category="Swirl" title="Crown" data-parameters='{"x": 0, "y": 0, "colors": "#000000", "removable": true, "draggable": true, "rotatable": true, "resizable": true}' />
+			  		<img src="recipe/Dress/dress1.png" category="Dress" title="dressl" data-parameters='{"x": 0, "y":0, "colors": "#000000", "removable": true, "draggable": true, "rotatable": true, "resizable": true, "price": 10}' />
+			  		<img src="recipe/Dress/dress2.png" category="Dress" title="dress2" data-parameters='{"x": 0, "y": 0, "colors": "#000000", "removable": true, "draggable": true, "rotatable": true, "resizable": true}' />
+			  		<img src="recipe/Dress/dress3.png" category="Dress" title="dress3" data-parameters='{"x": 0, "y": 0, "colors": "#000000", "removable": true, "draggable": true, "rotatable": true, "resizable": true}' />
+			  		<img src="recipe/Dress/dress4.png" category="Dress" title="dress4" data-parameters='{"x": 0, "y": 0, "colors": "#bf0200", "removable": true, "draggable": true, "rotatable": true, "resizable": true, "price": 5}' />
+			  		<img src="recipe/Dress/dress5.png" category="Dress" title="dress5" data-parameters='{"x": 0, "y": 0, "colors": "#000000", "removable": true, "draggable": true, "rotatable": true, "resizable": true}' />
+			  		<img src="recipe/Dress/dress6.png" category="Dress" title="dress6" data-parameters='{"x": 0, "y": 0, "colors": "#000000", "removable": true, "draggable": true, "rotatable": true, "resizable": true}' />
+			  		<img src="recipe/Dress/dress1.png" category="Dress" title="dressl" data-parameters='{"x": 0, "y":0, "colors": "#000000", "removable": true, "draggable": true, "rotatable": true, "resizable": true, "price": 10}' />
+			  		<img src="recipe/Dress/dress2.png" category="Dress" title="dress2" data-parameters='{"x": 0, "y": 0, "colors": "#000000", "removable": true, "draggable": true, "rotatable": true, "resizable": true}' />
+			  		<img src="recipe/Dress/dress3.png" category="Dress" title="dress3" data-parameters='{"x": 0, "y": 0, "colors": "#000000", "removable": true, "draggable": true, "rotatable": true, "resizable": true}' />
+			  		<img src="recipe/Dress/dress4.png" category="Dress" title="dress4" data-parameters='{"x": 0, "y": 0, "colors": "#bf0200", "removable": true, "draggable": true, "rotatable": true, "resizable": true, "price": 5}' />
+			  		<img src="recipe/Dress/dress5.png" category="Dress" title="dress5" data-parameters='{"x": 0, "y": 0, "colors": "#000000", "removable": true, "draggable": true, "rotatable": true, "resizable": true}' />
+			  		<img src="recipe/Dress/dress6.png" category="Dress" title="dress6" data-parameters='{"x": 0, "y": 0, "colors": "#000000", "removable": true, "draggable": true, "rotatable": true, "resizable": true}' />
+			  		
+			  		<img src="recipe/Waist/waist1.png" category="Waist" title="waistl" data-parameters='{"x": 0, "y":0, "colors": "#000000", "removable": true, "draggable": true, "rotatable": true, "resizable": true, "price": 10}' />
+			  		<img src="recipe/Waist/waist3.png" category="Waist" title="waist3" data-parameters='{"x": 0, "y": 0, "colors": "#000000", "removable": true, "draggable": true, "rotatable": true, "resizable": true}' />
+			  		<img src="recipe/Waist/waist4.png" category="Waist" title="waist4" data-parameters='{"x": 0, "y": 0, "colors": "#bf0200", "removable": true, "draggable": true, "rotatable": true, "resizable": true, "price": 5}' />
+			  		<img src="recipe/Waist/waist5.png" category="Waist" title="waist5" data-parameters='{"x": 0, "y": 0, "colors": "#000000", "removable": true, "draggable": true, "rotatable": true, "resizable": true}' />
+			  		<img src="recipe/Waist/waist6.png" category="Waist" title="waist6" data-parameters='{"x": 0, "y": 0, "colors": "#000000", "removable": true, "draggable": true, "rotatable": true, "resizable": true}' />
+			  		<img src="recipe/Waist/waist1.png" category="Waist" title="waistl" data-parameters='{"x": 0, "y":0, "colors": "#000000", "removable": true, "draggable": true, "rotatable": true, "resizable": true, "price": 10}' />
+			  		<img src="recipe/Waist/waist3.png" category="Waist" title="waist3" data-parameters='{"x": 0, "y": 0, "colors": "#000000", "removable": true, "draggable": true, "rotatable": true, "resizable": true}' />
+			  		<img src="recipe/Waist/waist4.png" category="Waist" title="waist4" data-parameters='{"x": 0, "y": 0, "colors": "#bf0200", "removable": true, "draggable": true, "rotatable": true, "resizable": true, "price": 5}' />
+			  		<img src="recipe/Waist/waist5.png" category="Waist" title="waist5" data-parameters='{"x": 0, "y": 0, "colors": "#000000", "removable": true, "draggable": true, "rotatable": true, "resizable": true}' />
+			  		<img src="recipe/Waist/waist6.png" category="Waist" title="waist6" data-parameters='{"x": 0, "y": 0, "colors": "#000000", "removable": true, "draggable": true, "rotatable": true, "resizable": true}' />
+
+			  	</div>
+			</div>
+		  	<div class="api-buttons clearfix" style="text-align: right;">
+			  	<a href="#" id="print-button" class="btn btn-info">Print</a>
+			  	<a href="#" id="checkout-button" class="btn btn-success">Checkout</a>
+			 
+			  	<span class="pull-right price badge badge-inverse" ><span id="thsirt-price"></span> $</span>
+		  	</div>
+		  	<div id="thsirt-output" class="output"></div>
+	       </div>   
+    	</div>
+    </body>
+</html>
